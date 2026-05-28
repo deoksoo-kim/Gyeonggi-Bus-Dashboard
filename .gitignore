@@ -1,0 +1,9 @@
+# Local secrets and virtual environments
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Streamlit/local artifacts
+.streamlit/secrets.toml
