@@ -1,5 +1,7 @@
-streamlit
-pandas
-numpy
-folium
-streamlit-folium
+streamlit>=1.32.0
+pandas>=2.0.0
+numpy>=1.26.0
+folium>=0.15.0
+streamlit-folium>=0.20.0
+scikit-learn>=1.4.0
+anthropic>=0.25.0
