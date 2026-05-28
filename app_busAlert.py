@@ -272,19 +272,28 @@ with tab1:
         "종합증차점수": "우선순위점수",
     })
 
+    def color_score(val):
+        try:
+            v = float(val)
+            if v >= 70: return "background-color:#fde8e8;color:#c0392b;font-weight:700"
+            if v >= 50: return "background-color:#fff3cd;color:#856404"
+            if v >= 30: return "background-color:#d1ecf1;color:#0c5460"
+            return ""
+        except: return ""
+
     st.dataframe(
         display.style
-            .background_gradient(cmap="Reds", subset=["우선순위점수"])
+            .map(color_score, subset=["우선순위점수"])
             .format({"일평균이용객": "{:.0f}", "변동계수(CV)": "{:.3f}",
                      "최대대기(분)": "{:.1f}", "시간당대수": "{:.1f}", "우선순위점수": "{:.1f}"}),
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
 
     # 노선별 CV 상세 바 차트
     st.markdown('<div class="section-title">📈 노선별 변동계수(CV) 비교 — 높을수록 배차 붕괴 위험</div>', unsafe_allow_html=True)
     chart_data = top_routes.set_index("노선명")[["cv_score", "risk_score"]].rename(
         columns={"cv_score": "변동계수(CV)", "risk_score": "현재위험도"})
-    st.bar_chart(chart_data, use_container_width=True)
+    st.bar_chart(chart_data, width="stretch")
 
     # ML 모델 (Phase 2 실제 학습)
     st.markdown('<div class="section-title">🤖 실제 ML 모델 검증 (GradientBoosting — 교차검증 5-fold)</div>', unsafe_allow_html=True)
@@ -299,7 +308,7 @@ with tab1:
         with st.expander("피처 중요도 상세"):
             imp_df = pd.DataFrame(importances.items(), columns=["피처", "중요도"]).sort_values("중요도", ascending=False)
             imp_df["중요도(%)"] = (imp_df["중요도"] * 100).round(1)
-            st.dataframe(imp_df, use_container_width=True, hide_index=True)
+            st.dataframe(imp_df, width="stretch", hide_index=True)
 
     # 다운로드
     st.markdown("---")
@@ -366,15 +375,15 @@ with tab3:
         return ""
 
     st.dataframe(
-        pred_show.style.applymap(highlight_change, subset=["위험도변화"])
+        pred_show.style.map(highlight_change, subset=["위험도변화"])
                        .format({"현재위험점수": "{:.1f}", "미래위험점수": "{:.1f}"}),
-        use_container_width=True, hide_index=True,
+        width="stretch", hide_index=True,
     )
 
     # 현재 vs 미래 비교 차트
     st.markdown('<div class="section-title">📊 현재 vs 미래 위험도 비교</div>', unsafe_allow_html=True)
     compare = future_df.set_index("노선명")[["현재위험점수", "미래위험점수"]]
-    st.bar_chart(compare, use_container_width=True)
+    st.bar_chart(compare, width="stretch")
 
     # 예측 시나리오 요약
     max_risk_route = future_df.loc[future_df["미래위험점수"].idxmax(), "노선명"]
